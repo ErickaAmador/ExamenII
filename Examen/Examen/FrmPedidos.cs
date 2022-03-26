@@ -22,12 +22,16 @@ namespace Examen
         ProductosAcceso productosAcceso = new ProductosAcceso();
         Pedido pedido = new Pedido();
         Productos productos;
+        PedidosAcceso pedidosAcceso = new PedidosAcceso();
+       
 
         List<DetallePedido> detallePedidosLista = new List<DetallePedido>();
 
         decimal subtotal = decimal.Zero;
         decimal impuesto = decimal.Zero;
         decimal totalAPagar = decimal.Zero;
+
+        
 
         private void Pedidos_Load(object sender, EventArgs e)
         {
@@ -71,11 +75,45 @@ namespace Examen
                 impuesto = subtotal * 0.15M;
                 totalAPagar = subtotal + impuesto;
 
+                SubTotalTextBox1.Text = subtotal.ToString();
+                ISVtextBox.Text = impuesto.ToString();  
+                TotalTextBox.Text = totalAPagar.ToString(); 
+
+
+
                 detallePedidosLista.Add(detallePedido);
                 DetalledataGridView1.DataSource = null;
                 DetalledataGridView1.DataSource = detallePedidosLista;
 
             }
         }
+
+        private void AgregarButton_Click(object sender, EventArgs e)
+        {
+            pedido.IdCliente = IdmaskedTextBox1.Text;
+            pedido.Fecha = FechadateTimePicker1.Value;
+            pedido.Subtotal = Convert.ToDecimal(SubTotalTextBox1.Text);
+            pedido.Impuesto = Convert.ToDecimal(ISVtextBox.Text); ;
+            pedido.Total = Convert.ToDecimal(TotalTextBox.Text); ;
+
+
+            int idPedido = 0;
+
+            idPedido = pedidosAcceso.InsertarPedido(pedido);
+
+            if (idPedido != 0) 
+            { 
+                foreach (var item in detallePedidosLista)
+                {
+                    item.IdPedido = idPedido;
+                    pedidosAcceso.DetallePedido(item);
+                }
+            
+            }
+
+
+        }
+
+
     }
 }
